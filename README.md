@@ -1,6 +1,6 @@
 # Decentralized Device Management
 
-An opensource device management solution where devices host endpoints serving health metric via ngrok tunnel 
+An opensource device management solution where devices host endpoints serving health metrics via ngrok tunnel 
 
 # Quick Start
 
