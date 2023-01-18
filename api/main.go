@@ -1,3 +1,4 @@
+//go:build linux
 package main
 
 import (
@@ -11,8 +12,11 @@ import (
 	"golang.ngrok.com/ngrok/config"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/shirou/gopsutil/v3/cpu"
+
+	"com.dylanswartz.ddm/api/commands"
 )
 
 func main() {
@@ -34,6 +38,7 @@ func run(ctx context.Context) error {
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/memory", memory)
 	http.HandleFunc("/cpu", processor)
+	http.HandleFunc("/reboot", reboot)
 	return http.Serve(tun, nil)
 }
 
@@ -68,5 +73,10 @@ func processor(w http.ResponseWriter, r *http.Request) {
 		usage{p},
 	}
 	w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(combined)
+	json.NewEncoder(w).Encode(combined)
+}
+
+func reboot(w http.ResponseWriter, r *http.Request) {
+	commands.Reboot()
+	fmt.Fprintf(w, "Rebooting device!")
 }
