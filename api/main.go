@@ -11,8 +11,6 @@ import (
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
 
@@ -37,7 +35,6 @@ func run(ctx context.Context) error {
 	}
 
 	http.HandleFunc("/", root)
-	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/memory", memory)
 	http.HandleFunc("/cpu", processor)
 	http.HandleFunc("/reboot", reboot)
