@@ -38,6 +38,8 @@ func run(ctx context.Context) error {
 	http.HandleFunc("/memory", memory)
 	http.HandleFunc("/cpu", processor)
 	http.HandleFunc("/reboot", reboot)
+
+	log.Println("tunnel created:", tun.URL())
 	return http.Serve(tun, nil)
 }
 
