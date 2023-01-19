@@ -2,18 +2,19 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"encoding/json"
+	"os"
 
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/v3/mem"
 
 	"com.dylanswartz.ddm/api/commands"
 )
@@ -26,7 +27,9 @@ func main() {
 
 func run(ctx context.Context) error {
 	tun, err := ngrok.Listen(ctx,
-		config.HTTPEndpoint(),
+		config.HTTPEndpoint(
+			config.WithBasicAuth(os.Getenv("DDM_USERNAME"), os.Getenv("DDM_PASSWORD")),
+		),
 		ngrok.WithAuthtokenFromEnv(),
 	)
 	if err != nil {
@@ -45,22 +48,21 @@ func root(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello from ngrok-go!")
 }
 
-
 func memory(w http.ResponseWriter, r *http.Request) {
 	v, _ := mem.VirtualMemory()
 	w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(v)
+	json.NewEncoder(w).Encode(v)
 }
 
 func processor(w http.ResponseWriter, r *http.Request) {
 	type info struct {
 		Info []cpu.InfoStat
 	}
-	
+
 	type usage struct {
 		Usage []float64
 	}
-	
+
 	type CPUMetrics struct {
 		info
 		usage
